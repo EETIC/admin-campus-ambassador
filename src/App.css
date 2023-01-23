@@ -1,0 +1,40 @@
+/* Loader CSS */
+.shapes {
+    width: 57.6px;
+    height: 57.6px;
+    display: grid;
+}
+
+.shapes:before,
+.shapes:after {
+    content: "";
+    background: #0c43ea;
+    transform-origin: left;
+    animation: shapes-0fdvou 1.6s infinite;
+}
+
+.shapes:before {
+    transform-origin: right;
+    --s: -1;
+}
+
+@keyframes shapes-0fdvou {
+
+    0%,
+    10% {
+        transform: translate(0, 0) scale(1);
+    }
+
+    33% {
+        transform: translate(calc(var(--s, 1)*50%), 0) scale(1);
+    }
+
+    66% {
+        transform: translate(calc(var(--s, 1)*50%), calc(var(--s, 1)*-50%)) scale(1);
+    }
+
+    90%,
+    100% {
+        transform: translate(calc(var(--s, 1)*50%), calc(var(--s, 1)*-50%)) scale(0.5, 2);
+    }
+}
