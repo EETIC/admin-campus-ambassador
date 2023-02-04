@@ -1,80 +1,85 @@
-import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { db, auth } from '../firebase/config'
-import { collection, getDocs, updateDoc, doc, deleteDoc } from 'firebase/firestore'
-import AppWrap from '../containers/Layout'
-import { onAuthStateChanged } from 'firebase/auth'
-import { Sidebar } from '../components'
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { db, auth } from "../firebase/config";
+import {
+  collection,
+  getDocs,
+  updateDoc,
+  doc,
+  deleteDoc,
+} from "firebase/firestore";
+import AppWrap from "../containers/Layout";
+import { onAuthStateChanged } from "firebase/auth";
+import { Sidebar } from "../components";
 
 const EditCA = () => {
-  const { id } = useParams()
-  console.log(id)
+  const { id } = useParams();
+  console.log(id);
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [docs, setDocs] = useState({
-    id: '',
-    name: '',
-    email: '',
-    phone: '',
-    college: '',
-    ref_code: '',
-    credit: '',
-  })
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+    id: "",
+    name: "",
+    email: "",
+    phone: "",
+    college: "",
+    ref_code: "",
+    credit: "",
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const caCollectionRef = collection(db, 'ca')
+  const caCollectionRef = collection(db, "ca");
 
   useEffect(() => {
     const getCA = async () => {
-      const data = await getDocs(caCollectionRef)
-        .catch((err) => {
-          setError(err.message)
-          console.log(err.message)
-          setLoading(false)
-        })
-      const doc = data.docs.map(doc => ({ ...doc.data(), id: doc.id }))
+      const data = await getDocs(caCollectionRef).catch((err) => {
+        setError(err.message);
+        console.log(err.message);
+        setLoading(false);
+      });
+      const doc = data.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
       // console.log(doc)
-      setDocs(doc.filter(doc => doc.ref_code === id)[0])
-      setLoading(false)
-    }
+      setDocs(doc.filter((doc) => doc.ref_code === id)[0]);
+      setLoading(false);
+    };
 
     onAuthStateChanged(auth, (user) => {
       if (!user) {
         // window.location.href = '/login'
-        navigate('/login')
+        navigate("/login");
       } else {
-        getCA()
+        getCA();
       }
-    })
+    });
+  }, []);
 
-
-  }, [])
-
-  console.log(docs)
+  console.log(docs);
 
   const handleChange = (e) => {
-    const { name, value } = e.target
-    setDocs({ ...docs, [name]: value })
-  }
+    const { name, value } = e.target;
+    setDocs({ ...docs, [name]: value });
+  };
 
   const updateCA = async () => {
-    const caRef = doc(db, 'ca', docs.id)
+    const caRef = doc(db, "ca", docs.id);
     await updateDoc(caRef, docs);
-  }
+  };
 
   const handleSubmit = (e) => {
-    updateCA()
-    e.preventDefault()
-    navigate('/list')
-  }
+    updateCA();
+    e.preventDefault();
+    navigate("/list");
+  };
 
-  const handleDelete = () => {
-    const caRef = doc(db, 'ca', docs.id)
-    deleteDoc(caRef)
-    navigate('/list')
-  }
+  const handleDelete = (name) => {
+    if (window.confirm(`Delete CA ${name}`)) {
+      const caRef = doc(db, "ca", docs.id);
+      deleteDoc(caRef);
+      navigate("/list");
+    }
+  };
 
   if (loading) {
     return (
@@ -85,7 +90,7 @@ const EditCA = () => {
           <div className="shapes"></div>
         </div>
       </div>
-    )
+    );
   } else if (error) {
     return (
       <div className="flex justify-center items-center h-screen w-screen">
@@ -93,19 +98,17 @@ const EditCA = () => {
           <h1 className="text-2xl font-bold">Error: {error}</h1>
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className='flex'>
+    <div className="flex">
       <Sidebar />
       <div className="flex flex-col m-5">
         <h1 className="text-2xl font-bold">Edit Campus Ambassador</h1>
         {/* {docs && docs.map(doc => ( */}
         <form className="flex flex-col">
-          <label className="mt-4">
-            Name
-          </label>
+          <label className="mt-4">Name</label>
           <input
             className="border border-gray-400 p-2 rounded"
             type="text"
@@ -113,9 +116,7 @@ const EditCA = () => {
             value={docs.name}
             onChange={handleChange}
           />
-          <label className="mt-4">
-            Email
-          </label>
+          <label className="mt-4">Email</label>
           <input
             className="border border-gray-400 p-2 rounded"
             type="email"
@@ -132,9 +133,7 @@ const EditCA = () => {
             name="phone"
             value={doc.phone}
           /> */}
-          <label className="mt-4">
-            College
-          </label>
+          <label className="mt-4">College</label>
           <input
             className="border border-gray-400 p-2 rounded"
             type="text"
@@ -142,9 +141,7 @@ const EditCA = () => {
             value={docs.college}
             onChange={handleChange}
           />
-          <label className="mt-4">
-            Referral Code
-          </label>
+          <label className="mt-4">Referral Code</label>
           <input
             className="border border-gray-400 p-2 rounded"
             type="text"
@@ -152,9 +149,7 @@ const EditCA = () => {
             value={docs.ref_code}
             onChange={handleChange}
           />
-          <label className="mt-4">
-            Credits
-          </label>
+          <label className="mt-4">Credits</label>
           <input
             className="border border-gray-400 p-2 rounded"
             type="number"
@@ -162,14 +157,23 @@ const EditCA = () => {
             value={docs.credit}
             onChange={handleChange}
           />
-          <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4  ml-2 mr-2" onClick={handleSubmit}>
+          <button
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4  ml-2 mr-2"
+            onClick={handleSubmit}
+          >
             Submit
           </button>
-          <div className='flex flex-row justify-around '>
-            <button className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 w-full ml-2 mr-2 " onClick={() => navigate('/list')}>
+          <div className="flex flex-row justify-around ">
+            <button
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mt-4 w-full ml-2 mr-2 "
+              onClick={() => navigate("/list")}
+            >
               Back
             </button>
-            <button className="border border-red-600 hover:bg-red-700 hover:text-white text-red-600 font-bold py-2 px-4 rounded mt-4 w-full ml-2 mr-2" onClick={handleDelete}>
+            <button
+              className="border border-red-600 hover:bg-red-700 hover:text-white text-red-600 font-bold py-2 px-4 rounded mt-4 w-full ml-2 mr-2"
+              onClick={() => handleDelete(docs.name)}
+            >
               Delete
             </button>
           </div>
@@ -177,7 +181,7 @@ const EditCA = () => {
         {/* ))} */}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default EditCA
+export default EditCA;
