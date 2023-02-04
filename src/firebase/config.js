@@ -10,11 +10,10 @@ const firebaseConfig = {
   storageBucket: process.env.REACT_APP_STO_BUCK,
   messagingSenderId: process.env.REACT_APP_MSG_SND_ID,
   appId: process.env.REACT_APP_APP_ID,
-  measurementId: process.env.REACT_APP_MEAS_ID,
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
 export const auth = getAuth(app);
-export const analytics = getAnalytics(app);
+// export const analytics = getAnalytics(app);
